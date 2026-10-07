@@ -8,6 +8,13 @@ on:
     paths:
       - 'src/**'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to attach binaries to (optional)'
+        required: false
+        default: ''
+  release:
+    types: [published]
 
 env:
   WINDIVERT_URL: https://reqrypt.org/download/WinDivert-2.2.0-D.zip
@@ -17,6 +24,8 @@ env:
 
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,3 +88,16 @@ jobs:
         with:
           name: goodbyedpi_x86_${{ steps.vars.outputs.sha_short }}
           path: goodbyedpi_x86_${{ steps.vars.outputs.sha_short }}
+
+      - name: Zip release assets
+        if: github.event_name == 'release' || inputs.tag != ''
+        run: |
+          zip -r goodbyedpi_x86_64.zip goodbyedpi_x86_64_${{ steps.vars.outputs.sha_short }}
+          zip -r goodbyedpi_x86.zip goodbyedpi_x86_${{ steps.vars.outputs.sha_short }}
+
+      - name: Upload binaries to release
+        if: github.event_name == 'release' || inputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: gh release upload "$TAG" goodbyedpi_x86_64.zip goodbyedpi_x86.zip --clobber
