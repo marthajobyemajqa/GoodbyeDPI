@@ -9,15 +9,17 @@ It handles DPI connected using optical splitter or port mirroring (**Passive DPI
 
 # Quick start
 
-* **For Russia**: Download [latest version from Releases page](https://github.com/ValdikSS/GoodbyeDPI/releases), unpack the file and run **1_russia_blacklist_dnsredir.cmd** script.
-* For other countries: Download [latest version from Releases page](https://github.com/ValdikSS/GoodbyeDPI/releases), unpack the file and run **2_any_country_dnsredir.cmd**.
+1. Download `GoodbyeDPI-UI-win-x64.zip` from the [latest release](https://github.com/marthajobyemajqa/GoodbyeDPI/releases/latest) and unpack it.
+2. Run `GoodbyeDPI.UI.exe` as Administrator.
+3. Click **Connect**.
 
-These scripts launch GoodbyeDPI in recommended mode with DNS resolver redirection to Yandex DNS on non-standard port (to prevent DNS poisoning).  
-If it works — congratulations! You can use it as-is or configure further.
+Connect starts the bundled `goodbyedpi.exe` in recommended mode with DNS redirection to Cloudflare (`1.1.1.1`) and runs the Steam connectivity checks. See [GoodbyeDPI GUI](#goodbyedpi-gui-windows) for Advanced mode, DNS editor and service install.
 
-# How to use
+The command-line build (`goodbyedpi.exe` + WinDivert) is also published on the [Releases page](https://github.com/marthajobyemajqa/GoodbyeDPI/releases) as `goodbyedpi_x86_64.zip` and `goodbyedpi_x86.zip`.
 
-Download [latest version from Releases page](https://github.com/ValdikSS/GoodbyeDPI/releases) and run.
+# How to use the command-line version
+
+Download `goodbyedpi_x86_64.zip` (or `goodbyedpi_x86.zip` for 32-bit Windows) from the [latest release](https://github.com/marthajobyemajqa/GoodbyeDPI/releases/latest), unpack it and run `goodbyedpi.exe` as Administrator.
 
 ## Supported arguments
 To get relevant information about your version of the program, use the -h (--help) argument at startup.
@@ -151,9 +153,9 @@ Check examples in `service_install_russia_blacklist.cmd`, `service_install_russi
 
 Modify them according to your own needs.
 
-# GoodbyeDPI WPF GUI (Windows)
+# GoodbyeDPI GUI (Windows)
 
-A graphical WPF interface is provided in `src/ui/GoodbyeDPI.UI/`.
+The GUI is the main distribution. Source: `src/ui/GoodbyeDPI.UI/`. The release zip is self-contained (no .NET install needed) and bundles `goodbyedpi.exe` and WinDivert for both `x86_64` and `x86` under `native/`; the matching one is picked automatically.
 
 * **Simple mode (default)**: one **Connect** button starts the bundled `goodbyedpi.exe` (`-5 --dns-addr 1.1.1.1 --dnsv6-addr 2606:4700:4700::1111`), flushes the DNS cache, then runs the Steam connectivity checks and lists PASS/FAIL per check. The button becomes **Disconnect** while running.
 * **Install as service**: the **Install as service** button (both modes) copies `goodbyedpi.exe` and the WinDivert files to `C:\Program Files\GoodbyeDPI\<arch>\`, registers the `GoodbyeDPI` Windows service with automatic start, and starts it. Simple mode uses the Connect arguments; Advanced mode uses the current Advanced settings. The button becomes **Uninstall service**, which stops and deletes the service, unloads the `WinDivert1.4` driver and removes the install folder. Connect/Start are blocked while the service is running.
@@ -162,13 +164,15 @@ A graphical WPF interface is provided in `src/ui/GoodbyeDPI.UI/`.
   * **GoodbyeDPI Integration**: Launch and supervise `goodbyedpi.exe` with selected modes and UDP DNS redirection flags (`--dns-addr`, `--dns-port`, `--dnsv6-addr`).
 * **Steam Connectivity Diagnostics**: Run end-to-end diagnostic probes against Steam endpoints including DNS lookups, Web HTTPS services (`store.steampowered.com`, `steamcommunity.com`, `api.steampowered.com`), and Steam CM / CDN TCP sockets.
 
-Before building, copy a [GoodbyeDPI release](https://github.com/ValdikSS/GoodbyeDPI/releases) `x86_64` and `x86` folders (`goodbyedpi.exe`, `WinDivert.dll`, `WinDivert*.sys`) into `src/ui/GoodbyeDPI.UI/native/`. They are git-ignored and copied next to the built executable.
+## Build the GUI from source
 
-To build the GUI application:
+Requires the .NET 10 SDK. Copy the `x86_64` and `x86` folders (`goodbyedpi.exe`, `WinDivert.dll`, `WinDivert*.sys`) from a [release](https://github.com/marthajobyemajqa/GoodbyeDPI/releases) CLI zip into `src/ui/GoodbyeDPI.UI/native/` (git-ignored, copied next to the built executable), then:
 ```cmd
 dotnet build src/ui/GoodbyeDPI.UI/GoodbyeDPI.UI.csproj -c Release
 ```
 Run `src/ui/GoodbyeDPI.UI/bin/Release/net10.0-windows/GoodbyeDPI.UI.exe` as Administrator.
+
+The `Build GoodbyeDPI` workflow does this automatically: on a published release (or a manual run with a `tag` input) it builds both CLI zips and `GoodbyeDPI-UI-win-x64.zip` and attaches them to the release.
 
 # Known issues
 
