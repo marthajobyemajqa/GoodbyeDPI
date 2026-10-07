@@ -1,2 +1,6 @@
 *.o
 *.exe
+
+src/ui/**/bin/
+src/ui/**/obj/
+src/ui/GoodbyeDPI.UI/native/

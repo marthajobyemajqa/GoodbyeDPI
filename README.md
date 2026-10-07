@@ -151,6 +151,25 @@ Check examples in `service_install_russia_blacklist.cmd`, `service_install_russi
 
 Modify them according to your own needs.
 
+# GoodbyeDPI WPF GUI (Windows)
+
+A graphical WPF interface is provided in `src/ui/GoodbyeDPI.UI/`.
+
+* **Simple mode (default)**: one **Connect** button starts the bundled `goodbyedpi.exe` (`-5 --dns-addr 1.1.1.1 --dnsv6-addr 2606:4700:4700::1111`), flushes the DNS cache, then runs the Steam connectivity checks and lists PASS/FAIL per check. The button becomes **Disconnect** while running.
+* **Install as service**: the **Install as service** button (both modes) copies `goodbyedpi.exe` and the WinDivert files to `C:\Program Files\GoodbyeDPI\<arch>\`, registers the `GoodbyeDPI` Windows service with automatic start, and starts it. Simple mode uses the Connect arguments; Advanced mode uses the current Advanced settings. The button becomes **Uninstall service**, which stops and deletes the service, unloads the `WinDivert1.4` driver and removes the install folder. Connect/Start are blocked while the service is running.
+* **Advanced mode**: the **Advanced mode** button in the header switches to the full tabbed UI:
+  * **DNS Configuration**: Select any network adapter, configure primary/secondary IPv4 DNS servers, apply DNS presets (Cloudflare, Google, Quad9, AdGuard, OpenDNS), reset adapter to DHCP, and flush Windows DNS cache.
+  * **GoodbyeDPI Integration**: Launch and supervise `goodbyedpi.exe` with selected modes and UDP DNS redirection flags (`--dns-addr`, `--dns-port`, `--dnsv6-addr`).
+* **Steam Connectivity Diagnostics**: Run end-to-end diagnostic probes against Steam endpoints including DNS lookups, Web HTTPS services (`store.steampowered.com`, `steamcommunity.com`, `api.steampowered.com`), and Steam CM / CDN TCP sockets.
+
+Before building, copy a [GoodbyeDPI release](https://github.com/ValdikSS/GoodbyeDPI/releases) `x86_64` and `x86` folders (`goodbyedpi.exe`, `WinDivert.dll`, `WinDivert*.sys`) into `src/ui/GoodbyeDPI.UI/native/`. They are git-ignored and copied next to the built executable.
+
+To build the GUI application:
+```cmd
+dotnet build src/ui/GoodbyeDPI.UI/GoodbyeDPI.UI.csproj -c Release
+```
+Run `src/ui/GoodbyeDPI.UI/bin/Release/net10.0-windows/GoodbyeDPI.UI.exe` as Administrator.
+
 # Known issues
 
 * Horribly outdated Windows 7 installations are not able to load WinDivert driver due to missing support for SHA256 digital signatures. Install KB3033929 [x86](https://www.microsoft.com/en-us/download/details.aspx?id=46078)/[x64](https://www.microsoft.com/en-us/download/details.aspx?id=46148), or better, update the whole system using Windows Update.
